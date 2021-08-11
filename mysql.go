@@ -1,7 +1,6 @@
 package main
 
 import (
-	"daodao-go/modules/command"
 	"fmt"
 	"github.com/xxiiaass/iutils"
 	"io/ioutil"
@@ -9,6 +8,11 @@ import (
 	"regexp"
 	"strings"
 )
+
+// todo
+/**
+build.go 路径
+**/
 
 func (mt *MysqlTask) parseFunction() []Func {
 	str, err := ioutil.ReadFile(mt.BuildFilePath)
@@ -79,15 +83,14 @@ func (mt *MysqlTask) parseField(fileTxt string) []DefineField {
 	return names
 }
 
-func NewMysqlTask(targetPath, PackageName string) *MysqlTask {
-	CurPath := command.GetCurPath()
+func NewMysqlTask(driverName, targetPath, PackageName string) *MysqlTask {
 	return &MysqlTask{
 		Task: Task{
 			FromDirPath:     targetPath,
-			BuildFilePath:   CurPath + "/../connections/mysql/build.go",
+			BuildFilePath:   DriverBuildFile,
 			PackageName:     PackageName,
 			WriteDirPath:    targetPath,
-			DriverName:      "mysql",
+			DriverName:      driverName,
 			ignoreMethod:    []string{"clone", "Clone", "TableName"},
 			ModelFilterFunc: defaultFilter,
 		},
@@ -100,6 +103,7 @@ type MysqlTask struct {
 
 func (mt *MysqlTask) Run() {
 	funcs := mt.parseFunction()
+	debug(fmt.Sprintf("解析驱动文件 parse funcs : %d", len(funcs)))
 	if mt.IsPrivate {
 		// 如果是渲染私有的方式，替换方法名
 		for i, item := range funcs {
@@ -110,6 +114,7 @@ func (mt *MysqlTask) Run() {
 		}
 	}
 	allTypes, fileds := mt.getAllTypeName()
+	debug(fmt.Sprintf("解析模型文件 getAllTypeName， allTypes:%d, fileds:%d", len(allTypes), len(fileds)))
 
 	workTypes := make([]string, 0)
 	workFileds := make([][]DefineField, 0)
@@ -122,8 +127,8 @@ func (mt *MysqlTask) Run() {
 			fileNums++
 			query := mt.topLine() +
 				"import \"reflect\"\n" +
-				"import \"daodao-go/modules/utils\"\n" +
-				"import \"daodao-go/connections/" + mt.DriverName + "\"\n"
+				"import \"github.com/xxiiaass/iutils\"\n" +
+				"import \"github.com/xxiiaass/" + mt.DriverName + "\"\n"
 
 			for i, tname := range workTypes {
 				query += mt.renderQuery(funcs, tname, workFileds[i])
@@ -192,14 +197,15 @@ func (mt *MysqlTask) renderCollect(funcs []Func, typeName string, filed []Define
 
 func (mt *MysqlTask) getAllTypeName() ([]string, [][]DefineField) {
 	files, _ := ioutil.ReadDir(mt.FromDirPath)
+	debug(fmt.Sprintf("从%s读取模型, 共%d个", mt.FromDirPath, len(files)))
 	tables := make([]string, 0)
 	fileds := make([][]DefineField, 0)
 	for _, f := range files {
-
 		if f.IsDir() {
 			continue
 		}
 		if !mt.ModelFilterFunc(f.Name()) {
+			debug(fmt.Sprintf("%s因名字没命中筛选规则，跳过", f.Name()))
 			continue
 		}
 		str, err := ioutil.ReadFile(path.Join(mt.FromDirPath, f.Name()))
@@ -207,10 +213,15 @@ func (mt *MysqlTask) getAllTypeName() ([]string, [][]DefineField) {
 			panic(err)
 		}
 		name := f.Name()[:len(f.Name())-3]
+		debug(mt.DriverName)
 		if !regexp.MustCompile("\\n\\s+" + mt.DriverName + ".Query\\s*\\n").MatchString(string(str)) {
+			// 校验 xsorm.Query
+			debug(fmt.Sprintf("%s因没有驱动申明，跳过", f.Name()))
 			continue
 		}
 		if !regexp.MustCompile(".*type " + name + "Query struct").MatchString(string(str)) {
+			// 校验  type AccountQuery struct {
+			debug(fmt.Sprintf("%s因驱动申明不合规，跳过", f.Name()))
 			continue
 		}
 
@@ -219,6 +230,7 @@ func (mt *MysqlTask) getAllTypeName() ([]string, [][]DefineField) {
 		// } 后增加判断换行以防止误判 interface{} 类型为 struct 结尾
 		targetStructStr := regexp.MustCompile("type " + name + " struct {.+?}@@").FindStringSubmatch(modelStr)
 		if len(targetStructStr) == 0 {
+			debug(fmt.Sprintf("%s因结构定义不合规，跳过", f.Name()))
 			continue
 		}
 

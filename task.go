@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"daodao-go/modules/command"
 	"html/template"
 	"io/ioutil"
 	"path"
@@ -10,14 +9,19 @@ import (
 	"strings"
 )
 
+// todo
+/**
+template 路径, 在应用目录建立一个文件夹
+**/
+
 func Write(text, path string) {
 	ioutil.WriteFile(path, []byte(text), 0644)
 }
 
 // 替换包名后，将模板文件写入目标文件夹中
-func CpTemplate(templateDir, templateName, targetPath, packageName string) {
-	CurPath := command.GetCurPath()
-	str, _ := ioutil.ReadFile(path.Join(CurPath, "/../cli/private_model/template/", templateDir, templateName))
+func CpTemplate(templatePath, templateName, targetPath, packageName string) {
+	// str, _ := ioutil.ReadFile(path.Join(CurPath, "/../cli/private_model/template/", templateDir, templateName))
+	str, _ := ioutil.ReadFile(templatePath)
 	afterStr := strings.Replace(string(str), "package template", "package "+packageName, 1)
 	Write(afterStr, path.Join(targetPath, "lib_auto_generate_"+templateName))
 }
@@ -177,7 +181,7 @@ type Task struct {
 	ignoreMethod    []string // 自动解析出来的方法，需要跳过的内容
 	PackageName     string   // 包名
 	WriteDirPath    string   // 生成的代码，写入的路劲
-	DriverName      string   // 驱动名
+	DriverName      string   // 驱动名(底层的包名)
 	IsPrivate       bool     // 生产的方法，是否是私有
 	ModelFilterFunc Filter
 }
