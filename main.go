@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/xxiiaass/iutils"
+	"github.com/xxiiaass/xsorm"
 	"io/ioutil"
 	"os"
 	"path"
@@ -35,9 +36,6 @@ func main() {
 			mkdir(XstplBuildDir)
 		}
 		if !exists(cfgPath) {
-			gopath := os.Getenv("GOPATH")
-			// todo
-			defaultCfg += "DriverBuildFile=" + path.Join(gopath)
 			Write(defaultCfg, cfgPath)
 		}
 
@@ -69,7 +67,8 @@ type MustHook interface {
 	initCfg(cfgPath)
 
 	CpTemplate(DefineTemplateFile, "define.go", DalDir, DalDir)
-	task := NewMysqlTask("xsorm", path.Join(CurPath, DalDir), DalDir)
+	task := NewMysqlTask("xsorm", path.Join(CurPath, DalDir), DalDir, xsorm.ExportBuildFile())
+
 	task.Run()
 
 	dalFiles, err := ioutil.ReadDir(path.Join(CurPath, DalDir))
@@ -85,7 +84,7 @@ type MustHook interface {
 			fullPath := path.Join(CurPath, DalDir, item.Name())
 
 			CpTemplate(DefineTemplateFile, "define.go", fullPath, item.Name())
-			task := NewMysqlTask("xsorm", fullPath, item.Name())
+			task := NewMysqlTask("xsorm", fullPath, item.Name(), xsorm.ExportBuildFile())
 			task.IsPrivate = true
 			task.ModelFilterFunc = func(name string) bool {
 				return strings.Contains(name, "Model.go") || defaultFilter(name)

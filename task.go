@@ -177,7 +177,7 @@ func defaultFilter(name string) bool {
 
 type Task struct {
 	FromDirPath     string // 解析的结构体，所在的文件夹
-	BuildFilePath   string
+	BuildFileStr    string
 	ignoreMethod    []string // 自动解析出来的方法，需要跳过的内容
 	PackageName     string   // 包名
 	WriteDirPath    string   // 生成的代码，写入的路劲

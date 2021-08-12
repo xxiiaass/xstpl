@@ -24,6 +24,10 @@ github.com/xxiiaass/iutils v0.0.0-20210811093401-f942b10a50cd h1:zzZN31gjndWMXSO
 github.com/xxiiaass/iutils v0.0.0-20210811093401-f942b10a50cd/go.mod h1:QydltkheLS+Km/ErsapiPSqGmyo8bBdhwOGE0vW9C0Q=
 github.com/xxiiaass/xsorm v0.0.0-20210811114407-2929ca97f8ab h1:n/2jFPe80wDB2DpZYIAOOTSCKPZC/ECKCjq65TAcL78=
 github.com/xxiiaass/xsorm v0.0.0-20210811114407-2929ca97f8ab/go.mod h1:DX9R7D0hx06IJb2TY0mB5sxRSomWcn0tbAhkbSpYcvU=
+github.com/xxiiaass/xsorm v0.0.0-20210812150741-34c54f32e584 h1:/111AhFKh6p/dTnaSg92Eh1hPO8MM3iZym0QUsLum6Y=
+github.com/xxiiaass/xsorm v0.0.0-20210812150741-34c54f32e584/go.mod h1:DX9R7D0hx06IJb2TY0mB5sxRSomWcn0tbAhkbSpYcvU=
+github.com/xxiiaass/xsorm v0.0.0-20210812151818-b7b84d2cd766 h1:Uo7fhNXEspC+KNvyrpkYYHs/KZxJZvYKGw2B6lhcMrM=
+github.com/xxiiaass/xsorm v0.0.0-20210812151818-b7b84d2cd766/go.mod h1:DX9R7D0hx06IJb2TY0mB5sxRSomWcn0tbAhkbSpYcvU=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=

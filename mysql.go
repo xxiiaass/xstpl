@@ -15,10 +15,7 @@ build.go 路径
 **/
 
 func (mt *MysqlTask) parseFunction() []Func {
-	str, err := ioutil.ReadFile(mt.BuildFilePath)
-	if err != nil {
-		panic(err)
-	}
+	str := mt.BuildFileStr
 	reg := regexp.MustCompile("func \\(build \\*Build\\)\\s+([A-Z]\\S+)\\((.+)?\\) \\*Build \\{")
 	x := reg.FindAllStringSubmatch(string(str), -1)
 	funcs := make([]Func, 0)
@@ -83,11 +80,11 @@ func (mt *MysqlTask) parseField(fileTxt string) []DefineField {
 	return names
 }
 
-func NewMysqlTask(driverName, targetPath, PackageName string) *MysqlTask {
+func NewMysqlTask(driverName, targetPath, PackageName, buildfilestr string) *MysqlTask {
 	return &MysqlTask{
 		Task: Task{
 			FromDirPath:     targetPath,
-			BuildFilePath:   DriverBuildFile,
+			BuildFileStr:    buildfilestr,
 			PackageName:     PackageName,
 			WriteDirPath:    targetPath,
 			DriverName:      driverName,

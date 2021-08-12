@@ -23,12 +23,10 @@ func getIni(ConfigFile string) *ini.File {
 }
 
 var DalDir = ""                                // 模型定义文件夹
-var DriverBuildFile = ""                       // 驱动方法定义文件
 var DefineTemplateFile = "xsbuild/template.go" // 类型定义文件
 
 func initCfg(ConfigFile string) {
 	Cfg := getIni(ConfigFile)
 	DalDir = Cfg.Section("").Key("DalDir").MustString("./models")
-	DriverBuildFile = Cfg.Section("").Key("DriverBuildFile").MustString("models")
 	DefineTemplateFile = Cfg.Section("").Key("DefineTemplateFile").MustString(path.Join(XstplBuildDir, "template.go"))
 }
