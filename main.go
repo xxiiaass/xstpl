@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/go-sql-driver/mysql"
 	"github.com/xxiiaass/iutils"
 	"github.com/xxiiaass/xsorm"
@@ -153,5 +152,5 @@ func exists(path string) bool {
 }
 
 func debug(str string) {
-	fmt.Println(str)
+	// fmt.Println(str)
 }
