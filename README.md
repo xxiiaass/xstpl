@@ -14,3 +14,11 @@ DefineTemplateFile=xsbuild/template.go
 
 * 执行 `xstpl`
 * 在.gitignore中，忽略`*lib_auto_generate*`文件
+
+
+### 定义代码生成
+
+
+可以根据数据库中已有的结构，生成定义代码
+
+`xstpl struct mocks root:1234567@tcp/mock_server`
