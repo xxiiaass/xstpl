@@ -1,6 +1,9 @@
 package main
 
 import (
+	"flag"
+	"fmt"
+	"github.com/go-sql-driver/mysql"
 	"github.com/xxiiaass/iutils"
 	"github.com/xxiiaass/xsorm"
 	"io/ioutil"
@@ -16,6 +19,15 @@ var defaultCfg = `DalDir=Models
 DefineTemplateFile=xsbuild/template.go
 `
 
+var Table = ""
+var Db = ""
+
+func Parse() {
+	flag.StringVar(&Table, "table", "", "")
+	flag.StringVar(&Db, "db", "", "")
+	flag.Parse()
+}
+
 // 获取可执行文件的所在路径, 如果外部指定了路径，则使用指定路径
 func GetCurPath() string {
 	return iutils.GetCurPath()
@@ -30,6 +42,7 @@ func GetCmd() string {
 
 func main() {
 
+	debug("cmd = " + GetCmd())
 	if GetCmd() == "init" {
 		// 初始化目录
 		if !exists(XstplBuildDir) {
@@ -62,6 +75,29 @@ type MustHook interface {
 
 		return
 	}
+	if GetCmd() == "struct" {
+		Table = os.Args[2]
+		Db = os.Args[3]
+		debug("table = " + Table)
+		debug("db = " + Db)
+		if Table != "" {
+			if Db == "" {
+				panic("无法链接数据库")
+			}
+			c, err := mysql.ParseDSN(Db)
+			if err != nil {
+				panic(err)
+			}
+			xsorm.AddConnect(xsorm.XConfig{
+				Config: *c,
+				Debug:  false,
+			})
+			xsorm.DefaultCon = c.DBName
+			xsorm.Init()
+			toStruct(Table)
+			return
+		}
+	}
 
 	CurPath := "." // GetCurPath()
 	initCfg(cfgPath)
@@ -75,6 +111,7 @@ type MustHook interface {
 	if err != nil {
 		panic(err)
 	}
+
 	for _, item := range dalFiles {
 		if item.IsDir() {
 			if item.Name() == "cache" || item.Name() == "name" {
@@ -115,6 +152,6 @@ func exists(path string) bool {
 	return true
 }
 
-func debug(str string){
-	// fmt.Println(str)
+func debug(str string) {
+	fmt.Println(str)
 }
